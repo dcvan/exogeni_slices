@@ -1,0 +1,279 @@
+<rdf:RDF
+    xmlns:kansei="http://geni-orca.renci.org/owl/kansei.owl#"
+    xmlns:compute="http://geni-orca.renci.org/owl/compute.owl#"
+    xmlns:app-color="http://geni-orca.renci.org/owl/app-color.owl#"
+    xmlns:ethernet="http://geni-orca.renci.org/owl/ethernet.owl#"
+    xmlns:dtn="http://geni-orca.renci.org/owl/dtn.owl#"
+    xmlns:time="http://www.w3.org/2006/time#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:openflow="http://geni-orca.renci.org/owl/openflow.owl#"
+    xmlns:modify-schema="http://geni-orca.renci.org/owl/modify.owl#"
+    xmlns:planetlab="http://geni-orca.renci.org/owl/planetlab.owl#"
+    xmlns:geni="http://geni-orca.renci.org/owl/geni.owl#"
+    xmlns:layer="http://geni-orca.renci.org/owl/layer.owl#"
+    xmlns:request-schema="http://geni-orca.renci.org/owl/request.owl#"
+    xmlns:ip4="http://geni-orca.renci.org/owl/ip4.owl#"
+    xmlns:orca="http://geni-orca.renci.org/owl/orca.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:eucalyptus="http://geni-orca.renci.org/owl/eucalyptus.owl#"
+    xmlns:domain="http://geni-orca.renci.org/owl/domain.owl#"
+    xmlns:collections="http://geni-orca.renci.org/owl/collections.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ec2="http://geni-orca.renci.org/owl/ec2.owl#"
+    xmlns:request="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#"
+    xmlns:topology="http://geni-orca.renci.org/owl/topology.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-slave">
+    <ip4:localIPAddress rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-slave-ip-172-16-1-100"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#Interface"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Term">
+    <time:hasDurationDescription rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#TermDuration"/>
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#Interval"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#TermDuration">
+    <time:days rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">14</time:days>
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#DurationDescription"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#slave">
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-slave"/>
+    <request-schema:postBootScript rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cat &gt;&gt; /etc/hosts &lt;&lt;EOF
+172.16.1.1 nimbus.storm nimbus
+172.16.1.2 zookeeper.storm zookeeper
+172.16.1.100 slave-0.storm slave-0
+172.16.1.101 slave-1.storm slave-1
+172.16.1.102 slave-2.storm slave-2
+EOF
+
+yum -y update
+yum -y install java-1.7.0 java-1.7.0-openjdk-devel libtool libuuid-devel gcc gcc-c++ make supervisor
+
+cd /root
+wget http://download.zeromq.org/zeromq-2.2.0.tar.gz
+tar zxvf zeromq-2.2.0.tar.gz
+cd zeromq-2.2.0
+./configure
+make install
+ldconfig
+
+cd /root
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.75.x86_64
+wget https://github.com/nathanmarz/jzmq/archive/master.zip -O jzmq-master.zip
+unzip jzmq-master
+cd jzmq-master
+./autoconf
+./configure
+make install
+
+cd /root
+wget http://mirrors.koehn.com/apache/storm/apache-storm-0.9.4/apache-storm-0.9.4.tar.gz
+tar zxvf apache-storm-0.9.4.tar.gz
+cat &gt;&gt; apache-storm-0.9.4/conf/storm.yaml &lt;&lt; EOF
+ storm.zookeeper.servers:
+    - "zookeeper"
+ nimbus.host: "nimbus"
+ storm.local.dir: "/var/storm"
+EOF
+
+cat &gt;&gt; /etc/supervisord.conf &lt;&lt; EOF
+[program:storm_supervisor]
+command=/root/apache-storm-0.9.4/bin/storm supervisor
+autostart=true
+autorestart=true
+startsecs=1
+startretries=999
+redirect_stderr=false
+stdout_logfile=/var/log/storm-nimbus-out
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+stdout_events_enabled=true
+stderr_logfile=/var/log/storm-nimbus-err
+stderr_logfile_maxbytes=100MB
+stderr_logfile_backups=10
+stderr_events_enabled=true
+EOF
+
+service supervisord start</request-schema:postBootScript>
+    <request-schema:inDomain rdf:resource="http://geni-orca.renci.org/owl/rcivmsite.rdf#rcivmsite/Domain"/>
+    <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Centos+6.3"/>
+    <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
+    <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
+    <layer:numCE rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</layer:numCE>
+    <request-schema:groupName>slave</request-schema:groupName>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ServerCloud"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/rcivmsite.rdf#rcivmsite/Domain">
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#NetworkDomain"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper-ip-172-16-1-2">
+    <ip4:netmask>255.255.255.0</ip4:netmask>
+    <layer:label_ID>172.16.1.2</layer:label_ID>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/ip4.owl#IPAddress"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper">
+    <ip4:localIPAddress rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper-ip-172-16-1-2"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#Interface"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#zookeeper">
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper"/>
+    <request-schema:postBootScript rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cat &gt;&gt; /etc/hosts &lt;&lt;EOF
+172.16.1.1 nimbus.storm nimbus
+172.16.1.2 zookeeper.storm zookeeper
+172.16.1.100 slave-0.storm slave-0
+172.16.1.101 slave-1.storm slave-1
+172.16.1.102 slave-2.storm slave-2
+EOF
+yum -y update
+yum -y install java-1.7.0 java-1.7.0-openjdk-devel libtool libuuid-devel gcc gcc-c++ make supervisor
+
+wget http://mirror.cc.columbia.edu/pub/software/apache/zookeeper/current/zookeeper-3.4.6.tar.gz -P /root
+
+cd /root
+tar zxvf zookeeper-3.4.6.tar.gz
+
+mkdir /var/zookeeper
+cp zookeeper-3.4.6/conf/zoo_sample.cfg zookeeper-3.4.6/conf/zoo.cfg
+echo "dataDir=/var/zookeeper" &gt;&gt; zookeeper-3.4.6/conf/zoo.cfg
+
+cat &gt;&gt; /etc/supervisord.conf &lt;&lt; EOF
+[program:zookeeper]
+command=/root/zookeeper-3.4.6/bin/zkServer.sh start-foreground
+autostart=true
+autorestart=true
+startsecs=1
+startretries=999
+redirect_stderr=false
+stdout_logfile=/var/log/zookeeper-out
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+stdout_events_enabled=true
+stderr_logfile=/var/log/zookeeper-err
+stderr_logfile_maxbytes=100MB
+stderr_logfile_backups=10
+stderr_events_enabled=true
+EOF
+
+service supervisord start</request-schema:postBootScript>
+    <request-schema:inDomain rdf:resource="http://geni-orca.renci.org/owl/rcivmsite.rdf#rcivmsite/Domain"/>
+    <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Centos+6.3"/>
+    <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
+    <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ComputeElement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0">
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus"/>
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-slave"/>
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper"/>
+    <layer:atLayer rdf:resource="http://geni-orca.renci.org/owl/ethernet.owl#EthernetNetworkElement"/>
+    <layer:bandwidth rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100000000</layer:bandwidth>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#BroadcastConnection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus-ip-172-16-1-1">
+    <ip4:netmask>255.255.255.0</ip4:netmask>
+    <layer:label_ID>172.16.1.1</layer:label_ID>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/ip4.owl#IPAddress"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus">
+    <ip4:localIPAddress rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus-ip-172-16-1-1"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#Interface"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#nimbus">
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus"/>
+    <request-schema:postBootScript rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cat &gt;&gt; /etc/hosts &lt;&lt;EOF
+172.16.1.1 nimbus.storm nimbus
+172.16.1.2 zookeeper.storm zookeeper
+172.16.1.100 slave-0.storm slave-0
+172.16.1.101 slave-1.storm slave-1
+172.16.1.102 slave-2.storm slave-2
+EOF
+
+yum -y update
+yum -y install java-1.7.0 java-1.7.0-openjdk-devel libtool libuuid-devel gcc gcc-c++ make supervisor
+
+cd /root
+wget http://download.zeromq.org/zeromq-2.2.0.tar.gz
+tar zxvf zeromq-2.2.0.tar.gz
+cd zeromq-2.2.0
+./configure
+make install
+ldconfig
+
+cd /root
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.75.x86_64
+wget https://github.com/nathanmarz/jzmq/archive/master.zip -O jzmq-master.zip
+unzip jzmq-master
+cd jzmq-master
+./autoconf
+./configure
+make install
+
+cd /root
+wget http://mirrors.koehn.com/apache/storm/apache-storm-0.9.4/apache-storm-0.9.4.tar.gz
+tar zxvf apache-storm-0.9.4.tar.gz
+cat &gt;&gt; apache-storm-0.9.4/conf/storm.yaml &lt;&lt; EOF
+ storm.zookeeper.servers:
+    - "zookeeper"
+ nimbus.host: "nimbus"
+ storm.local.dir: "/var/storm"
+EOF
+
+cat &gt;&gt; /etc/supervisord.conf &lt;&lt; EOF
+[program:storm_nimbus]
+command=/root/apache-storm-0.9.4/bin/storm nimbus
+autostart=true
+autorestart=true
+startsecs=1
+startretries=999
+redirect_stderr=false
+stdout_logfile=/var/log/storm-nimbus-out
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+stdout_events_enabled=true
+stderr_logfile=/var/log/storm-nimbus-err
+stderr_logfile_maxbytes=100MB
+stderr_logfile_backups=10
+stderr_events_enabled=true
+
+[program:storm_ui]
+command=/root/apache-storm-0.9.4/bin/storm ui
+autostart=true
+autorestart=true
+startsecs=1
+startretries=999
+redirect_stderr=false
+stdout_logfile=/var/log/storm-ui-out
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+stdout_events_enabled=true
+stderr_logfile=/var/log/storm-ui-err
+stderr_logfile_maxbytes=100MB
+stderr_logfile_backups=10
+stderr_events_enabled=true
+EOF
+
+service supervisord start</request-schema:postBootScript>
+    <request-schema:inDomain rdf:resource="http://geni-orca.renci.org/owl/rcivmsite.rdf#rcivmsite/Domain"/>
+    <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Centos+6.3"/>
+    <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
+    <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ComputeElement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-slave-ip-172-16-1-100">
+    <ip4:netmask>255.255.255.0</ip4:netmask>
+    <layer:label_ID>172.16.1.100</layer:label_ID>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/ip4.owl#IPAddress"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#">
+    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0"/>
+    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#slave"/>
+    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#nimbus"/>
+    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#zookeeper"/>
+    <request-schema:hasTerm rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Term"/>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/request.owl#Reservation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Centos+6.3">
+    <topology:hasURL>http://geni-images.renci.org/images/standard/centos/centos6.3-neuca-v1.0.7.xml</topology:hasURL>
+    <topology:hasGUID>ea7a22549aee7ae8a164a45e663e822e77464bbb</topology:hasGUID>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#DiskImage"/>
+  </rdf:Description>
+</rdf:RDF>
