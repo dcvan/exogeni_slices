@@ -107,7 +107,9 @@ service supervisord start</request-schema:postBootScript>
     <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Storm-SiteAware-v0.1"/>
     <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
     <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
-    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ComputeElement"/>
+    <layer:numCE rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer:numCE>
+    <request-schema:groupName>supervisors-tamu</request-schema:groupName>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ServerCloud"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper">
     <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#Interface"/>
@@ -158,11 +160,11 @@ service supervisord start</request-schema:postBootScript>
     <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#NetworkDomain"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0">
-    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-tamu"/>
     <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-nimbus"/>
     <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-zookeeper"/>
-    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-uh"/>
     <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-ufl"/>
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-uh"/>
+    <topology:hasInterface rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-tamu"/>
     <layer:atLayer rdf:resource="http://geni-orca.renci.org/owl/ethernet.owl#EthernetNetworkElement"/>
     <layer:bandwidth rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100000000</layer:bandwidth>
     <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#BroadcastConnection"/>
@@ -284,7 +286,9 @@ service supervisord start</request-schema:postBootScript>
     <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Storm-SiteAware-v0.1"/>
     <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
     <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
-    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ComputeElement"/>
+    <layer:numCE rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer:numCE>
+    <request-schema:groupName>supervisors-uh</request-schema:groupName>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ServerCloud"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://geni-orca.renci.org/owl/uflvmsite.rdf#uflvmsite/Domain">
     <rdf:type rdf:resource="http://geni-orca.renci.org/owl/topology.owl#NetworkDomain"/>
@@ -341,7 +345,9 @@ service supervisord start</request-schema:postBootScript>
     <compute:diskImage rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Storm-SiteAware-v0.1"/>
     <compute:specificCE rdf:resource="http://geni-orca.renci.org/owl/exogeni.owl#XOMedium"/>
     <domain:hasResourceType rdf:resource="http://geni-orca.renci.org/owl/compute.owl#VM"/>
-    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ComputeElement"/>
+    <layer:numCE rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer:numCE>
+    <request-schema:groupName>supervisors-ufl</request-schema:groupName>
+    <rdf:type rdf:resource="http://geni-orca.renci.org/owl/compute.owl#ServerCloud"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-uh">
     <ip4:localIPAddress rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0-supervisors-uh-ip-172-16-1-101"/>
@@ -351,8 +357,8 @@ service supervisord start</request-schema:postBootScript>
     <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#VLAN0"/>
     <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#zookeeper"/>
     <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#nimbus"/>
-    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#supervisors-tamu"/>
     <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#supervisors-uh"/>
+    <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#supervisors-tamu"/>
     <collections:element rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#supervisors-ufl"/>
     <request-schema:hasTerm rdf:resource="http://geni-orca.renci.org/owl/aec0e66b-2671-45be-8e95-9b60474023a2#Term"/>
     <rdf:type rdf:resource="http://geni-orca.renci.org/owl/request.owl#Reservation"/>
